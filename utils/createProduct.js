@@ -23,4 +23,4 @@ const createProduct = () => {
   );
 };
 
-createProduct();
+createProduct;

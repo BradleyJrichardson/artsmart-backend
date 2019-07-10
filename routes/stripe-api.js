@@ -12,9 +12,25 @@ const stripe = require("stripe")("sk_test_PAGemW3HJHwcvA0PLP6eme6F00nK93R7T3");
 router.post("/order", async (req, res) => {
   const order = req.body.order;
   const source = req.body.source;
-  // source is the card token put the order in database with token?
+  const { email } = req.body.order;
+  const { name } = req.body.order.shipping;
+
   try {
+    let stripeCustomer = null;
     const stripeOrder = await stripe.orders.create(order);
+
+    stripe.customers.retrieve("cus_FPNB4FFp7v481M", async (err, customer) => {
+      stripeCustomer = customer;
+      if (stripeCustomer === null) {
+        stripeCustomer = await stripe.customers.create({
+          email: email,
+          description: name,
+          source: source
+        });
+        console.log(`Customer created: ${stripeCustomer.description}`);
+      }
+    });
+
     console.log(`Order created: ${stripeOrder.id}`);
   } catch (err) {
     console.log(`Order error: ${err}`);
@@ -24,30 +40,3 @@ router.post("/order", async (req, res) => {
 });
 
 module.exports = router;
-
-// const makeUser = items => {
-//   const newUser = new User({
-//     details: TODO
-//   });
-//   if (newUser.save()) {
-//     console.log("success 🤓");
-//   } else {
-//     console.log("failed 🤬");
-//   }
-// };
-/// check if user exists
-// const checkMushroom = async () => {
-//   try {
-//     const query = await Mushroom.findOne({ binomial_name: bionomial });
-//     if (query === null) {
-//       const mushroom = await makeMushroom();
-//       console.log("success");
-//       console.log(mushroom);
-//     } else {
-//       console.log("mushroom exists");
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     console.log("fail");
-//   }
-// };
