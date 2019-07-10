@@ -16,21 +16,36 @@ router.post("/order", async (req, res) => {
   const { name } = req.body.order.shipping;
 
   try {
-    let stripeCustomer = null;
-    const stripeOrder = await stripe.orders.create(order);
+    // let stripeCustomer = null;
+    // const stripeOrder = await stripe.orders.create(order);
+    // stripeCustomer = await stripe.customers.create({
+    //   email: email,
+    //   description: name,
+    //   source: source
+    // });
 
-    stripe.customers.retrieve("cus_FPNB4FFp7v481M", async (err, customer) => {
-      stripeCustomer = customer;
-      if (stripeCustomer === null) {
-        stripeCustomer = await stripe.customers.create({
-          email: email,
-          description: name,
-          source: source
-        });
-        console.log(`Customer created: ${stripeCustomer.description}`);
-      }
-    });
-
+    let existingCustomers = await stripe.customers.list({ email: email });
+    if (existingCustomers.data.length) {
+      console.log("customer exists!");
+    } else {
+      let customer = await stripe.customers.create({
+        email: email,
+        description: name,
+        source: source
+      });
+    }
+    // stripe.customers.retrieve("cus_FPNB4FFp7v481M", async (err, customer) => {
+    //   stripeCustomer = customer;
+    //   if (stripeCustomer === null) {
+    //     stripeCustomer = await stripe.customers.create({
+    //       email: email,
+    //       description: name,
+    //       source: source
+    //     });
+    //     console.log(`Customer created: ${stripeCustomer.description}`);
+    //   }
+    // });
+    console.log(`Customer created: ${stripeCustomer.description}`);
     console.log(`Order created: ${stripeOrder.id}`);
   } catch (err) {
     console.log(`Order error: ${err}`);
