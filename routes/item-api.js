@@ -4,106 +4,79 @@ const router = express.Router();
 
 require("dotenv").config();
 const stripeAPI = process.env.STRIPE_API;
+const stripe = require("stripe")("sk_test_PAGemW3HJHwcvA0PLP6eme6F00nK93R7T3");
 
-const stripe = require("stripe")(stripeAPI);
-
-const items = [
-  {
-    title: "title1",
-    categories: ["strings", "here"],
-    price: 6969,
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt aliquid unde ipsa, praesentium quia maxime et doloribus exercitationem totam assumenda!",
-    auto_process: false,
-    quantity: 54,
-    images: ["urls from cloudinary", "urls from cloudinary"]
-  },
-  {
-    title: "title2",
-    categories: ["strings", "here"],
-    price: 6969,
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt aliquid unde ipsa, praesentium quia maxime et doloribus exercitationem totam assumenda!",
-    auto_process: false,
-    quantity: 54,
-    images: ["urls from cloudinary", "urls from cloudinary"]
-  },
-  {
-    title: "title3",
-    categories: ["strings", "here"],
-    price: 6969,
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt aliquid unde ipsa, praesentium quia maxime et doloribus exercitationem totam assumenda!",
-    auto_process: false,
-    quantity: 54,
-    images: ["urls from cloudinary", "urls from cloudinary"]
-  },
-  {
-    title: "title4",
-    categories: ["strings", "here"],
-    price: 6969,
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt aliquid unde ipsa, praesentium quia maxime et doloribus exercitationem totam assumenda!",
-    auto_process: false,
-    quantity: 54,
-    images: ["urls from cloudinary", "urls from cloudinary"]
-  }
-];
-
-const seedItems = items => {
-  items.forEach(item => {
-    let {
-      title,
-      categories,
-      price,
-      description,
-      auto_process,
-      quantity,
-      images
-    } = item;
-    const newItem = new Item({
-      title: title,
-      categories: categories,
-      price: price,
-      description: description,
-      auto_process: auto_process,
-      quantity: quantity,
-      images: images
-    });
-    if (newItem.save()) {
-      console.log("success 🤓");
-    } else {
-      console.log("failed 🤬");
-    }
-  });
-};
+// const seedItems = items => {
+//   items.forEach(item => {
+//     let {
+//       title,
+//       categories,
+//       price,
+//       description,
+//       auto_process,
+//       quantity,
+//       images
+//     } = item;
+//     const newItem = new Item({
+//       title: title,
+//       categories: categories,
+//       price: price,
+//       description: description,
+//       auto_process: auto_process,
+//       quantity: quantity,
+//       images: images
+//     });
+//     newItem.save();
+//     if (newItem.save()) {
+//       console.log("success 🤓");
+//     } else {
+//       console.log("failed 🤬");
+//     }
+//   });
+// };
 
 router.get("/seed", (req, res) => {
-  seedItems(items);
+  createProduct();
 });
 
-const createProduct = () => {
-  stripe.products.create(
+const createProduct = async () => {
+  await stripe.products.create(
     {
-      name: "T-shirt",
+      name: "Teddies Quilt",
       type: "good"
     },
     (err, product) => {
-      console.log(product);
       stripe.skus.create(
         {
           product: product.id,
-          price: 1500,
+          price: 15,
           currency: "aud",
           inventory: { type: "infinite" }
         },
         (err, sku) => {
+          // put into the database here
           console.log(sku);
+          const newItem = new Item({
+            title: "Teddy bear",
+            categories: ["BOM", "Quilts"],
+            price: 15,
+            description:
+              "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quae, enim sequi repellendus necessitatibus obcaecati quam quibusdam ducimus culpa temporibus tempora!",
+            auto_process: false,
+            images: ["urls", "urls"],
+            product_id: product.id,
+            sku: sku.id
+          });
+          if (newItem.save()) {
+            console.log("success 🤓");
+          } else {
+            console.log("failed 🤬");
+          }
         }
       );
     }
   );
 };
-createProduct;
 
+createProduct();
 module.exports = router;
