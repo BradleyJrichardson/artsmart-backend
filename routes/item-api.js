@@ -1,7 +1,11 @@
 const Item = require("../models/Item");
 const express = require("express");
 const router = express.Router();
-const stripe = require("stripe")("sk_test_PAGemW3HJHwcvA0PLP6eme6F00nK93R7T3");
+
+require("dotenv").config();
+const stripeAPI = process.env.STRIPE_API;
+
+const stripe = require("stripe")(stripeAPI);
 
 const items = [
   {
@@ -84,7 +88,7 @@ const createProduct = () => {
       name: "T-shirt",
       type: "good"
     },
-    function(err, product) {
+    (err, product) => {
       console.log(product);
       stripe.skus.create(
         {
@@ -93,7 +97,7 @@ const createProduct = () => {
           currency: "aud",
           inventory: { type: "infinite" }
         },
-        function(err, sku) {
+        (err, sku) => {
           console.log(sku);
         }
       );
