@@ -13,7 +13,8 @@ const createProduct = async () => {
   await stripe.products.create(
     {
       name: "Life is good",
-      type: "good"
+      type: "good",
+      description: "here goes a little description"
     },
     (err, product) => {
       stripe.skus.create(
@@ -21,7 +22,13 @@ const createProduct = async () => {
           product: product.id,
           price: 15,
           currency: "aud",
-          inventory: { type: "infinite" }
+          inventory: { type: "infinite" },
+          package_dimensions: {
+            height: 8,
+            length: 4,
+            weight: 4,
+            width: 2
+          }
         },
         (err, sku) => {
           // put into the database here
@@ -35,7 +42,8 @@ const createProduct = async () => {
             auto_process: false,
             images: ["urls", "urls"],
             product_id: product.id,
-            sku: sku.id
+            sku: sku.id,
+            package_dimensions: sku.package_dimensions
           });
           if (newItem.save()) {
             console.log("success 🤓");

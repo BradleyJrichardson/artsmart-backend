@@ -7,6 +7,7 @@ const stripeAPI = process.env.STRIPE_API;
 const stripe = require("stripe")(stripeAPI);
 router.post("/order", async (req, res) => {
   const order = req.body.order;
+  console.log(order);
   const source = req.body.source;
   const { email } = req.body.order;
   const { name } = req.body.order.shipping;
@@ -32,7 +33,6 @@ router.post("/order", async (req, res) => {
     } else {
       order.customer = newCustomer.id;
     }
-
     const stripeOrder = await stripe.orders.create(order);
     console.log(order);
     console.log(`Order created: ${stripeOrder.id}`);
