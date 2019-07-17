@@ -12,9 +12,10 @@ router.get("/seed", (req, res) => {
 const createProduct = async () => {
   await stripe.products.create(
     {
-      name: "Life is good",
+      name: "not new",
       type: "good",
-      description: "here goes a little description"
+      description:
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fuga, quis."
     },
     (err, product) => {
       stripe.skus.create(
@@ -34,16 +35,16 @@ const createProduct = async () => {
           // put into the database here
           console.log(sku);
           const newItem = new orderItem({
-            title: "Life is good",
-            categories: ["hand painted"],
-            price: 30,
+            title: "Christmas",
+            categories: ["Christmas"],
+            price: 500,
             description:
               "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quae, enim sequi repellendus necessitatibus obcaecati quam quibusdam ducimus culpa temporibus tempora!",
             auto_process: false,
             images: ["urls", "urls"],
             product_id: product.id,
             sku: sku.id,
-            package_dimensions: sku.package_dimensions
+            new: false
           });
           if (newItem.save()) {
             console.log("success 🤓");

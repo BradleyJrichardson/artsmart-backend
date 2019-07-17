@@ -26,6 +26,10 @@ const orderItemSchema = new mongoose.Schema({
   sku: {
     type: String,
     required: true
+  },
+  new: {
+    type: Boolean,
+    required: true
   }
 });
 module.exports = mongoose.model("order_item", orderItemSchema);
