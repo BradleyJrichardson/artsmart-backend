@@ -13,4 +13,6 @@
 - [Mahdi](https://github.com/MS944)<br>
 - [Bradley ](https://github.com/BradleyJrichardson)<br>
 
-> ### This project is split over two Repos | [Frontend](https://github.com/BradleyJrichardson/artsmart-craft-cottage)<br>
+> This project is split over three Repos
+> [Frontend](https://github.com/BradleyJrichardson/artsmart-craft-cottage)<br>
+> [Dashboard](https://github.com/BradleyJrichardson/artsmart-dashboard)

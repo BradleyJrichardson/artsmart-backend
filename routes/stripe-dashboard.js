@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const orderObj = require("../models/Order");
 
 require("dotenv").config();
 const stripeAPI = process.env.STRIPE_API;
@@ -7,38 +8,44 @@ const stripeAPI = process.env.STRIPE_API;
 const stripe = require("stripe")(stripeAPI);
 
 router.get("/customers", async (req, res) => {
-  await stripe.customers.list({ limit: 10 }, (err, customers) => {
-    console.log(customers);
+  await stripe.customers.list((err, customers) => {
+    res.status(200).send(customers);
   });
 });
 
-/// dealing with orders
 router.get("/orders", async (req, res) => {
-  await stripe.orders.list({ limit: 10 }, (err, orders) => {
-    console.log(orders);
+  await stripe.orders.list((err, orders) => {
+    res.status(200).send(orders);
   });
 });
+
+const findOrder = async order_id => {
+  return orderObj.find({ order_id: order_id });
+};
 
 router.post("/pay", async (req, res) => {
+  let { order_id } = req.body.order;
+  let foundOrderObj = await findOrder(order_id);
+  let token = foundOrderObj[0].customer_token;
+
   await stripe.orders.pay(
-    "or_1EupAEINLC12hJ7njNxw1V9S",
+    order_id,
     {
-      source: "tok_mastercard" // obtained with Stripe.js
+      source: token
     },
     (err, order) => {
-      // asynchronously called
+      res.status(200).send(order);
+      if (err) {
+        console.log(err);
+        res.status(400).send(err);
+      }
     }
   );
 });
 
-router.post("/update", async (req, res) => {
-  await stripe.orders.update("or_1EupjDINLC12hJ7ne4pgkuYL", {
-    status: "paid"
-  });
-});
-
 router.post("/fullfill", async (req, res) => {
-  await stripe.orders.update("or_1EupjDINLC12hJ7ne4pgkuYL", {
+  let { order_id } = req.body.order;
+  await stripe.orders.update(order_id, {
     status: "fulfilled",
     shipping: {
       carrier: "AUSPOST",
@@ -46,3 +53,25 @@ router.post("/fullfill", async (req, res) => {
     }
   });
 });
+
+/// need to get working
+router.post("/refund", async (req, res) => {
+  console.log(req.body.order);
+  let { order_id } = req.body.order;
+  await stripe.orders.returnOrder(
+    order_id,
+    {
+      items: [
+        {
+          type: "sku",
+          parent: "sku_FSJYWe98c5ZbQZ"
+        }
+      ]
+    },
+    function(err, order) {
+      // asynchronously called
+    }
+  );
+});
+
+module.exports = router;
