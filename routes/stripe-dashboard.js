@@ -23,6 +23,10 @@ const findOrder = async order_id => {
   return orderObj.find({ order_id: order_id });
 };
 
+const removeOrder = async order_id => {
+  return orderObj.deleteOne({ order_id: order_id });
+};
+
 router.post("/pay", async (req, res) => {
   let { order_id } = req.body.order;
   let foundOrderObj = await findOrder(order_id);
@@ -34,6 +38,7 @@ router.post("/pay", async (req, res) => {
       source: token
     },
     (err, order) => {
+      removeOrder(order_id);
       res.status(200).send(order);
       if (err) {
         console.log(err);

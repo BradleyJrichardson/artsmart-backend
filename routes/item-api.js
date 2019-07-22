@@ -256,7 +256,7 @@ router.get("/seed", (req, res) => {
 
 const createProduct = data => {
   data.forEach(async item => {
-    const query = await orderItem.findOne({ name: item.name });
+    const query = await orderItem.findOne({ title: item.name });
     if (query === null) {
       await stripe.products.create(
         {
@@ -268,7 +268,7 @@ const createProduct = data => {
           stripe.skus.create(
             {
               product: product.id,
-              price: item.price,
+              price: item.price * 100,
               currency: "aud",
               inventory: { type: "infinite" },
               package_dimensions: {
@@ -280,6 +280,7 @@ const createProduct = data => {
             },
 
             (err, sku) => {
+              console.log(sku);
               const newItem = new orderItem({
                 title: item.name,
                 categories: [item.categories],

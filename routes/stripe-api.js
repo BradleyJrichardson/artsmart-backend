@@ -7,6 +7,7 @@ const stripeAPI = process.env.STRIPE_API;
 const stripe = require("stripe")(stripeAPI);
 router.post("/order", async (req, res) => {
   const order = req.body.order;
+  console.log(order);
   const source = req.body.source;
   const { email } = req.body.order;
   const { name } = req.body.order.shipping;
@@ -35,13 +36,13 @@ router.post("/order", async (req, res) => {
 
     // create a order in our database with
     let customerId = order.customer;
-    let customerToken = source;
+    let orderToken = source;
     let orderId = stripeOrder.id;
     /// its actually an order token as it changes for each order so will have to create an order
     /// model and use that to pull the token out? need order_id, Cust_id, and token
     const Order = new orderObj({
       customer_id: customerId,
-      customer_token: customerToken,
+      order_token: orderToken,
       order_id: orderId
     });
     if (Order.save()) {

@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  customer_token: {
+  order_token: {
     type: String,
     required: true
   },
