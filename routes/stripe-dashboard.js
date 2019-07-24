@@ -59,7 +59,6 @@ router.post("/fullfill", async (req, res) => {
   });
 });
 
-/// need to get working
 router.post("/refund", async (req, res) => {
   console.log(req.body.order);
   let { order_id } = req.body.order;
@@ -73,9 +72,7 @@ router.post("/refund", async (req, res) => {
         }
       ]
     },
-    function(err, order) {
-      // asynchronously called
-    }
+    function(err, order) {}
   );
 });
 

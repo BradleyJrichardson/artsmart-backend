@@ -9,13 +9,10 @@ const login = async (req, res) => {
       console.log("in functions");
       const query = await User.findOne({ name: username });
       if (query !== null) {
-        console.log("found user");
         const result = await checkPassword(password, query.password);
-        console.log(result);
         if (!result) {
           return res.status(403).send("incorrect credentials");
         } else {
-          console.log(query);
           const token = await generateAccessToken(query);
           console.log(token);
           return res.send({ token });

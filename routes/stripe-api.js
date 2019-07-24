@@ -7,10 +7,10 @@ const stripeAPI = process.env.STRIPE_API;
 const stripe = require("stripe")(stripeAPI);
 router.post("/order", async (req, res) => {
   const order = req.body.order;
-  console.log(order);
   const source = req.body.source;
   const { email } = req.body.order;
-  const { name } = req.body.order.shipping;
+  const { name, phone, address } = req.body.order.shipping;
+  console.log(req.body);
   try {
     let newCustomer;
     let existingCustomer = await stripe.customers.list({ email: email });
@@ -20,10 +20,12 @@ router.post("/order", async (req, res) => {
     } else {
       newCustomer = await stripe.customers.create({
         email: email,
-        description: name,
-        source: source
+        name: name,
+        source: source,
+        phone: phone,
+        address: address
       });
-      console.log(`Customer created: ${newCustomer.description}`);
+      console.log(`Customer created: ${newCustomer.name}`);
     }
 
     if (existingCustomer.data.length) {

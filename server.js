@@ -1,14 +1,9 @@
-const express = require("express");
+const app = require("./app");
 const mongoose = require("mongoose");
-const stripe = require("stripe")("sk_test_PAGemW3HJHwcvA0PLP6eme6F00nK93R7T3");
-const app = new express();
-const cors = require("cors");
 require("dotenv").config();
-const mongoURI = process.env.MONGO_PROD;
-
-app.use(cors());
-app.use(require("body-parser").text());
-app.use(require("./routes"));
+// listen on port 5000
+const PORT = process.env.PORT || 5000;
+const mongoURI = process.env.DB_URL;
 
 // defining some options to pass into connect
 const options = {
@@ -29,5 +24,4 @@ mongoose
     console.log("connected to mongoDB 🤙🏿🤙🏿🤙🏿🤙🏿🤙🏿🤙🏿🤙🏿🤙🏿🤙🏿🤙🏿🤙🏿");
   });
 
-// listen on port 5000
-app.listen(5000, () => console.log("listening on port 5000"));
+app.listen(PORT, () => console.log("listening on port 5000"));
